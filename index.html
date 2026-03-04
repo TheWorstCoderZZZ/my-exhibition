@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LIFE — @ch._wong — The Pinnacle</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Jost:wght@100;200;300;400&display=swap');
+
+    html { scroll-behavior: auto; }
+    ::-webkit-scrollbar { display: none; }
+
+    body {
+        margin: 0; padding: 0;
+        background-color: #000; color: #fff;
+        font-family: 'Jost', sans-serif;
+        overflow-x: hidden;
+        cursor: none;
+    }
+
+    /* 電影膠片質感 */
+    body::after {
+        content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background-image: url("https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Noise_Texture.png");
+        opacity: 0.05; pointer-events: none; z-index: 999998;
+    }
+
+    /* 1. 儀式感進場 */
+    #loader {
+        position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        background: #000; z-index: 200000;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        transition: opacity 1.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .loader-pct { font-family: 'Jost', sans-serif; font-weight: 100; font-size: 11px; letter-spacing: 12px; color: #fff; margin-bottom: 25px; opacity: 0.6; }
+    .loader-title { font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 15px; color: #fff; text-transform: uppercase; overflow: hidden; white-space: nowrap; animation: glow 3s ease-in-out infinite; }
+    @keyframes glow { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+    /* 2. 游標與強化的環境光 */
+    .custom-cursor {
+        position: fixed; top: 0; left: 0; width: 6px; height: 6px;
+        background-color: #fff; border-radius: 50%; pointer-events: none; z-index: 1000000;
+        transform: translate(-50%, -50%); mix-blend-mode: difference;
+        transition: width 0.4s cubic-bezier(0.2, 1, 0.2, 1), height 0.4s cubic-bezier(0.2, 1, 0.2, 1);
+    }
+    .custom-cursor.hovered { width: 65px; height: 65px; background-color: rgba(255,255,255,0.1); border: 0.5px solid rgba(255,255,255,0.4); }
+    
+    #ambient-glow {
+        position: fixed; top: 0; left: 0; width: 600px; height: 600px;
+        background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+        border-radius: 50%; pointer-events: none; z-index: 99997;
+        transform: translate(-50%, -50%);
+    }
+
+    #progress-bar { position: fixed; top: 0; left: 0; width: 0%; height: 2px; background: #fff; z-index: 100000; }
+
+    /* 平滑捲動架構 */
+    #smooth-wrapper { width: 100%; height: 100%; overflow: hidden; position: fixed; top: 0; left: 0; }
+    #smooth-content { will-change: transform; }
+
+    body.no-scroll { overflow: hidden; }
+
+    /* 3. 音譜播放器 */
+    .audio-player { position: fixed; top: 40px; right: 40px; z-index: 100001; display: flex; align-items: center; cursor: none; }
+    .visualizer { display: flex; align-items: flex-end; gap: 4px; height: 12px; margin-right: 15px; }
+    .vis-bar { width: 1px; background: #fff; height: 2px; }
+    .playing .vis-bar { animation: visualize 0.8s infinite ease-in-out; }
+    @keyframes visualize { 0%, 100% { height: 2px; } 50% { height: 12px; } }
+    .audio-label { font-size: 8px; letter-spacing: 4px; color: #888; text-transform: uppercase; }
+
+    /* 4. Magnetic Header */
+    header { padding: 45vh 8vw 20vh 8vw; }
+    header h1 { 
+        font-family: 'Cinzel', serif; font-size: 11vw; letter-spacing: 4vw; 
+        text-transform: uppercase; margin: 0; line-height: 0.8;
+        transition: transform 0.4s cubic-bezier(0.2, 1, 0.2, 1);
+        display: inline-block;
+    }
+    header p { font-weight: 200; letter-spacing: 1.5vw; color: #888; text-transform: uppercase; margin-top: 60px; }
+
+    /* 5. 開窗式畫廊 */
+    .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15vw; padding: 0 8vw 300px 8vw; max-width: 1800px; margin: 0 auto; }
+    .gallery-item {
+        position: relative; opacity: 0;
+        -webkit-clip-path: inset(100% 0 0 0);
+        clip-path: inset(100% 0 0 0);
+        transition: opacity 1.8s ease, -webkit-clip-path 1.8s cubic-bezier(0.2, 1, 0.2, 1), clip-path 1.8s cubic-bezier(0.2, 1, 0.2, 1), transform 1.8s cubic-bezier(0.2, 1, 0.2, 1);
+        transform: translateY(50px);
+    }
+    .gallery-item.visible { 
+        opacity: 1; 
+        -webkit-clip-path: inset(0% 0 0 0);
+        clip-path: inset(0% 0 0 0); 
+        transform: translateY(0); 
+    }
+    .gallery-item:nth-child(even) { margin-top: 30vh; }
+
+    .img-container { width: 100%; overflow: hidden; background: #050505; }
+    .gallery-item img {
+        width: 100%; display: block; filter: grayscale(100%) brightness(0.6);
+        transition: transform 2.5s cubic-bezier(0.2, 1, 0.2, 1), filter 1.5s ease;
+    }
+    .gallery-item img.hidden-origin { opacity: 0 !important; }
+    .gallery-item:hover img:not(.hidden-origin) { transform: scale(1.08); filter: grayscale(0%) brightness(1.1); }
+
+    .item-info { margin-top: 30px; display: flex; justify-content: space-between; font-size: 9px; letter-spacing: 5px; color: #444; text-transform: uppercase; opacity: 0; transition: 0.8s; }
+    .gallery-item:hover .item-info { opacity: 1; color: #fff; }
+
+    /* 6. Footer (修復：更纖薄的版權部分) */
+    footer { 
+        padding: 100px 8vw 60px 8vw; /* 減少上下間距 */
+        text-align: center; 
+        border-top: 1px solid rgba(255,255,255,0.03); 
+    }
+    footer p { 
+        font-weight: 100; 
+        letter-spacing: 2vw; 
+        font-size: 10px; 
+        color: #555; 
+        text-transform: uppercase; 
+        transition: all 1s ease; 
+    }
+    footer p:hover { color: #fff; letter-spacing: 2.2vw; }
+
+    /* 7. 無縫 Lightbox */
+    #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1000000; transition: background-color 1.2s ease; }
+    #lightbox.active { background-color: rgba(0,0,0,0.995); }
+    #moving-photo { position: absolute; object-fit: contain; transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000001; pointer-events: none; }
+
+    @media (max-width: 800px) {
+        .gallery { grid-template-columns: 1fr; gap: 80px; }
+        .gallery-item:nth-child(even) { margin-top: 0; }
+        header h1 { font-size: 16vw; }
+        .custom-cursor, #ambient-glow, #smooth-wrapper { display: none; }
+        body { cursor: auto; overflow: auto; }
+        #smooth-content { position: relative; }
+    }
+</style>
+</head>
+<body>
+
+<div id="loader">
+    <div class="loader-content">
+        <div class="loader-pct" id="loader-pct">00%</div>
+        <div class="loader-title">The Art of Life</div>
+    </div>
+</div>
+
+<div id="progress-bar"></div>
+<div id="ambient-glow"></div>
+<div class="custom-cursor" id="cursor"></div>
+
+<div id="smooth-wrapper">
+    <div id="smooth-content">
+        
+        <div class="audio-player" id="audio-toggle">
+            <div class="visualizer"><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div></div>
+            <div class="audio-label" id="audio-status">Sound Off</div>
+        </div>
+        <audio id="bg-music" loop><source src="your-video.mp4" type="audio/mp4"></audio>
+
+        <header>
+            <h1 id="magnetic-title">Life</h1>
+            <p>A Curation by @ch._wong</p>
+        </header>
+
+        <div class="gallery">
+            <div class="gallery-item"><div class="img-container"><img src="Photo1.jpeg"></div><div class="item-info"><span>Urban Flow</span><span>ENTRY 01</span></div></div>
+            <div class="gallery-item"><div class="img-container"><img src="Photo2.jpeg"></div><div class="item-info"><span>Peak Silence</span><span>ENTRY 02</span></div></div>
+            <div class="gallery-item"><div class="img-container"><img src="Photo3.jpeg"></div><div class="item-info"><span>Human Soul</span><span>ENTRY 03</span></div></div>
+            <div class="gallery-item"><div class="img-container"><img src="Photo4.jpeg"></div><div class="item-info"><span>Rural Spirit</span><span>ENTRY 04</span></div></div>
+            <div class="gallery-item"><div class="img-container"><img src="Photo5.jpeg"></div><div class="item-info"><span>Macro Life</span><span>ENTRY 05</span></div></div>
+            <div class="gallery-item"><div class="img-container"><img src="Photo6.jpeg"></div><div class="item-info"><span>Crimson Bloom</span><span>ENTRY 06</span></div></div>
+            <div class="gallery-item"><div class="img-container"><img src="Photo7.jpeg"></div><div class="item-info"><span>Midnight Glow</span><span>ENTRY 07</span></div></div>
+            <div class="gallery-item"><div class="img-container"><img src="Photo8.jpeg"></div><div class="item-info"><span>Silent Stream</span><span>ENTRY 08</span></div></div>
+            <div class="gallery-item"><div class="img-container"><img src="Photo9.jpeg"></div><div class="item-info"><span>Still Time</span><span>ENTRY 09</span></div></div>
+            <div class="gallery-item"><div class="img-container"><img src="Photo10.jpeg"></div><div class="item-info"><span>The Reaper</span><span>FINALE</span></div></div>
+        </div>
+
+        <footer>
+            <p>© 2026 — @ch._wong — The Pinnacle Collection</p>
+        </footer>
+
+    </div>
+</div>
+
+<div id="lightbox">
+    <img id="moving-photo" src="">
+</div>
+
+<script>
+    const cursor = document.getElementById('cursor');
+    const glow = document.getElementById('ambient-glow');
+    const progressBar = document.getElementById('progress-bar');
+    const lightbox = document.getElementById('lightbox');
+    const movingPhoto = document.getElementById('moving-photo');
+    const audioToggle = document.getElementById('audio-toggle');
+    const audioStatus = document.getElementById('audio-status');
+    const audio = document.getElementById('bg-music');
+    const loader = document.getElementById('loader');
+    const loaderPct = document.getElementById('loader-pct');
+    const smoothContent = document.getElementById('smooth-content');
+    const magneticTitle = document.getElementById('magnetic-title');
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    let activeImg = null;
+
+    // A. 儀式感進場
+    let pct = 0;
+    const interval = setInterval(() => {
+        pct += (Math.random() * 2);
+        if (pct >= 100) {
+            pct = 100;
+            clearInterval(interval);
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 1800);
+            }, 800);
+        }
+        loaderPct.innerText = Math.floor(pct).toString().padStart(2, '0') + "%";
+    }, 40);
+
+    // B. 巔峰平滑捲動與視窗偵測
+    let current = 0;
+    let target = 0;
+    let ease = 0.075;
+
+    function lerp(start, end, t) { return start * (1 - t) + end * t; }
+
+    function smoothScroll() {
+        target = window.scrollY;
+        current = lerp(current, target, ease);
+        smoothContent.style.transform = `translate3d(0, ${-current}px, 0)`;
+        
+        const height = Math.max(1, document.body.scrollHeight - window.innerHeight);
+        progressBar.style.width = (target / height) * 100 + "%";
+
+        const wh = window.innerHeight;
+        galleryItems.forEach(item => {
+            const rect = item.getBoundingClientRect();
+            if (rect.top < wh * 0.9 && rect.bottom > 0) {
+                item.classList.add('visible');
+            } else {
+                item.classList.remove('visible');
+            }
+        });
+
+        requestAnimationFrame(smoothScroll);
+    }
+    
+    function updateHeight() {
+        if (smoothContent) {
+            document.body.style.height = `${smoothContent.getBoundingClientRect().height}px`;
+        }
+    }
+    const resizeObserver = new ResizeObserver(() => updateHeight());
+    resizeObserver.observe(smoothContent);
+    window.addEventListener('resize', updateHeight);
+    window.addEventListener('load', updateHeight);
+    
+    smoothScroll();
+
+    // C. 游標與加強環境光
+    document.addEventListener('mousemove', (e) => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+        glow.style.left = e.clientX + 'px';
+        glow.style.top = e.clientY + 'px';
+
+        const rect = magneticTitle.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const distance = Math.hypot(e.clientX - centerX, e.clientY - centerY);
+        
+        if (distance < 300) {
+            const moveX = (e.clientX - centerX) * 0.3;
+            const moveY = (e.clientY - centerY) * 0.3;
+            magneticTitle.style.transform = `translate(${moveX}px, ${moveY}px)`;
+        } else {
+            magneticTitle.style.transform = `translate(0, 0)`;
+        }
+    });
+
+    // E. 播放器
+    audioToggle.addEventListener('click', () => {
+        if (audio.paused) {
+            audio.play().catch(() => {});
+            audioToggle.classList.add('playing');
+            audioStatus.innerText = "Sound On";
+        } else {
+            audio.pause();
+            audioToggle.classList.remove('playing');
+            audioStatus.innerText = "Sound Off";
+        }
+    });
+
+    // F. 無縫飛出動畫
+    document.querySelectorAll('.gallery-item img').forEach(img => {
+        img.addEventListener('click', () => {
+            activeImg = img;
+            const rect = img.getBoundingClientRect();
+            movingPhoto.src = img.src;
+            movingPhoto.style.top = rect.top + 'px';
+            movingPhoto.style.left = rect.left + 'px';
+            movingPhoto.style.width = rect.width + 'px';
+            movingPhoto.style.height = rect.height + 'px';
+            lightbox.style.display = 'block';
+            img.classList.add('hidden-origin');
+            document.body.classList.add('no-scroll');
+            setTimeout(() => {
+                lightbox.classList.add('active');
+                movingPhoto.style.top = '10vh';
+                movingPhoto.style.left = '10vw';
+                movingPhoto.style.width = '80vw';
+                movingPhoto.style.height = '80vh';
+            }, 50);
+        });
+    });
+
+    lightbox.addEventListener('click', () => {
+        const rect = activeImg.getBoundingClientRect();
+        lightbox.classList.remove('active');
+        movingPhoto.style.top = rect.top + 'px';
+        movingPhoto.style.left = rect.left + 'px';
+        movingPhoto.style.width = rect.width + 'px';
+        movingPhoto.style.height = rect.height + 'px';
+        setTimeout(() => {
+            activeImg.classList.remove('hidden-origin');
+            lightbox.style.display = 'none';
+            document.body.classList.remove('no-scroll');
+        }, 1000);
+    });
+
+    document.querySelectorAll('.gallery-item, .audio-player, footer, #magnetic-title').forEach(el => {
+        el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+        el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+    });
+</script>
+
+</body>
+</html>
