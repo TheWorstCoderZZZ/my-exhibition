@@ -36,7 +36,7 @@
     .loader-title { font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 15px; color: #fff; text-transform: uppercase; overflow: hidden; white-space: nowrap; animation: glow 3s ease-in-out infinite; }
     @keyframes glow { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
 
-    /* 2. 游標與強化的環境光 */
+    /* 2. 游標與環境光 */
     .custom-cursor {
         position: fixed; top: 0; left: 0; width: 6px; height: 6px;
         background-color: #fff; border-radius: 50%; pointer-events: none; z-index: 1000000;
@@ -87,12 +87,7 @@
         transition: opacity 1.8s ease, -webkit-clip-path 1.8s cubic-bezier(0.2, 1, 0.2, 1), clip-path 1.8s cubic-bezier(0.2, 1, 0.2, 1), transform 1.8s cubic-bezier(0.2, 1, 0.2, 1);
         transform: translateY(50px);
     }
-    .gallery-item.visible { 
-        opacity: 1; 
-        -webkit-clip-path: inset(0% 0 0 0);
-        clip-path: inset(0% 0 0 0); 
-        transform: translateY(0); 
-    }
+    .gallery-item.visible { opacity: 1; -webkit-clip-path: inset(0% 0 0 0); clip-path: inset(0% 0 0 0); transform: translateY(0); }
     .gallery-item:nth-child(even) { margin-top: 30vh; }
 
     .img-container { width: 100%; overflow: hidden; background: #050505; }
@@ -103,23 +98,45 @@
     .gallery-item img.hidden-origin { opacity: 0 !important; }
     .gallery-item:hover img:not(.hidden-origin) { transform: scale(1.08); filter: grayscale(0%) brightness(1.1); }
 
-    .item-info { margin-top: 30px; display: flex; justify-content: space-between; font-size: 9px; letter-spacing: 5px; color: #444; text-transform: uppercase; opacity: 0; transition: 0.8s; }
-    .gallery-item:hover .item-info { opacity: 1; color: #fff; }
-
-    /* 6. Footer (修復：更纖薄的版權部分) */
-    footer { 
-        padding: 100px 8vw 60px 8vw; /* 減少上下間距 */
-        text-align: center; 
-        border-top: 1px solid rgba(255,255,255,0.03); 
+    /* ★ 全新高級文字排版 (Editorial Typography) ★ */
+    .item-text-wrap { 
+        margin-top: 40px; 
+        display: flex; 
+        flex-direction: column; 
+        opacity: 0; 
+        transform: translateY(15px);
+        transition: all 1s cubic-bezier(0.2, 1, 0.2, 1); 
     }
-    footer p { 
-        font-weight: 100; 
-        letter-spacing: 2vw; 
-        font-size: 10px; 
+    .gallery-item:hover .item-text-wrap { opacity: 1; transform: translateY(0); }
+    
+    .info-header { 
+        display: flex; 
+        justify-content: space-between; 
+        font-size: 9px; 
+        letter-spacing: 5px; 
         color: #555; 
         text-transform: uppercase; 
-        transition: all 1s ease; 
+        margin-bottom: 20px; 
+        border-bottom: 1px solid rgba(255,255,255,0.05); 
+        padding-bottom: 15px; 
+        transition: border-color 1s, color 1s;
     }
+    .gallery-item:hover .info-header { color: #fff; border-color: rgba(255,255,255,0.3); }
+    
+    .info-story { 
+        font-family: 'Cinzel', serif; 
+        font-size: 13px; 
+        letter-spacing: 2px; 
+        color: #444; 
+        line-height: 1.8; 
+        margin: 0; 
+        transition: color 1s; 
+    }
+    .gallery-item:hover .info-story { color: #ccc; }
+
+    /* 6. Footer */
+    footer { padding: 100px 8vw 60px 8vw; text-align: center; border-top: 1px solid rgba(255,255,255,0.03); }
+    footer p { font-weight: 100; letter-spacing: 2vw; font-size: 10px; color: #555; text-transform: uppercase; transition: all 1s ease; }
     footer p:hover { color: #fff; letter-spacing: 2.2vw; }
 
     /* 7. 無縫 Lightbox */
@@ -127,13 +144,20 @@
     #lightbox.active { background-color: rgba(0,0,0,0.995); }
     #moving-photo { position: absolute; object-fit: contain; transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000001; pointer-events: none; }
 
+    /* ★ 手機版完美適應與觸控優化 ★ */
     @media (max-width: 800px) {
-        .gallery { grid-template-columns: 1fr; gap: 80px; }
+        .gallery { grid-template-columns: 1fr; gap: 140px; padding: 0 6vw 200px 6vw; }
         .gallery-item:nth-child(even) { margin-top: 0; }
         header h1 { font-size: 16vw; }
         .custom-cursor, #ambient-glow, #smooth-wrapper { display: none; }
         body { cursor: auto; overflow: auto; }
         #smooth-content { position: relative; }
+        
+        /* 手機版文字永遠保持優雅可見，不依賴 Hover */
+        .item-text-wrap { opacity: 1; transform: translateY(0); }
+        .info-header { color: #aaa; border-color: rgba(255,255,255,0.15); }
+        .info-story { color: #888; }
+        .gallery-item img { filter: grayscale(50%) brightness(0.8); } /* 手機版預設亮度提高 */
     }
 </style>
 </head>
@@ -165,16 +189,85 @@
         </header>
 
         <div class="gallery">
-            <div class="gallery-item"><div class="img-container"><img src="Photo1.jpeg"></div><div class="item-info"><span>Urban Flow</span><span>ENTRY 01</span></div></div>
-            <div class="gallery-item"><div class="img-container"><img src="Photo2.jpeg"></div><div class="item-info"><span>Peak Silence</span><span>ENTRY 02</span></div></div>
-            <div class="gallery-item"><div class="img-container"><img src="Photo3.jpeg"></div><div class="item-info"><span>Human Soul</span><span>ENTRY 03</span></div></div>
-            <div class="gallery-item"><div class="img-container"><img src="Photo4.jpeg"></div><div class="item-info"><span>Rural Spirit</span><span>ENTRY 04</span></div></div>
-            <div class="gallery-item"><div class="img-container"><img src="Photo5.jpeg"></div><div class="item-info"><span>Macro Life</span><span>ENTRY 05</span></div></div>
-            <div class="gallery-item"><div class="img-container"><img src="Photo6.jpeg"></div><div class="item-info"><span>Crimson Bloom</span><span>ENTRY 06</span></div></div>
-            <div class="gallery-item"><div class="img-container"><img src="Photo7.jpeg"></div><div class="item-info"><span>Midnight Glow</span><span>ENTRY 07</span></div></div>
-            <div class="gallery-item"><div class="img-container"><img src="Photo8.jpeg"></div><div class="item-info"><span>Silent Stream</span><span>ENTRY 08</span></div></div>
-            <div class="gallery-item"><div class="img-container"><img src="Photo9.jpeg"></div><div class="item-info"><span>Still Time</span><span>ENTRY 09</span></div></div>
-            <div class="gallery-item"><div class="img-container"><img src="Photo10.jpeg"></div><div class="item-info"><span>The Reaper</span><span>FINALE</span></div></div>
+            <div class="gallery-item">
+                <div class="img-container"><img src="Photo1.jpeg"></div>
+                <div class="item-text-wrap">
+                    <div class="info-header"><span>Urban Flow</span><span>ENTRY 01</span></div>
+                    <p class="info-story">The rhythm of the city pulses through steel veins, capturing the fleeting moments of metropolitan existence.</p>
+                </div>
+            </div>
+            
+            <div class="gallery-item">
+                <div class="img-container"><img src="Photo2.jpeg"></div>
+                <div class="item-text-wrap">
+                    <div class="info-header"><span>Peak Silence</span><span>ENTRY 02</span></div>
+                    <p class="info-story">A silent monument standing against the shifting tides of time, veiled in dramatic clouds.</p>
+                </div>
+            </div>
+            
+            <div class="gallery-item">
+                <div class="img-container"><img src="Photo3.jpeg"></div>
+                <div class="item-text-wrap">
+                    <div class="info-header"><span>Human Soul</span><span>ENTRY 03</span></div>
+                    <p class="info-story">Fleeting shadows and intertwined destinies painted on the vibrant concrete canvas.</p>
+                </div>
+            </div>
+            
+            <div class="gallery-item">
+                <div class="img-container"><img src="Photo4.jpeg"></div>
+                <div class="item-text-wrap">
+                    <div class="info-header"><span>Rural Spirit</span><span>ENTRY 04</span></div>
+                    <p class="info-story">Whispers of the wind captured in the absolute stillness of the forgotten countryside.</p>
+                </div>
+            </div>
+            
+            <div class="gallery-item">
+                <div class="img-container"><img src="Photo5.jpeg"></div>
+                <div class="item-text-wrap">
+                    <div class="info-header"><span>Macro Life</span><span>ENTRY 05</span></div>
+                    <p class="info-story">The intricate dance of life, revealing entire universes hidden within the unseen.</p>
+                </div>
+            </div>
+            
+            <div class="gallery-item">
+                <div class="img-container"><img src="Photo6.jpeg"></div>
+                <div class="item-text-wrap">
+                    <div class="info-header"><span>Crimson Bloom</span><span>ENTRY 06</span></div>
+                    <p class="info-story">A vivid declaration of existence, blooming fiercely against the encroaching darkness.</p>
+                </div>
+            </div>
+            
+            <div class="gallery-item">
+                <div class="img-container"><img src="Photo7.jpeg"></div>
+                <div class="item-text-wrap">
+                    <div class="info-header"><span>Midnight Glow</span><span>ENTRY 07</span></div>
+                    <p class="info-story">Illuminated memories cast long, emerald shadows in the quietest hours of the night.</p>
+                </div>
+            </div>
+            
+            <div class="gallery-item">
+                <div class="img-container"><img src="Photo8.jpeg"></div>
+                <div class="item-text-wrap">
+                    <div class="info-header"><span>Silent Stream</span><span>ENTRY 08</span></div>
+                    <p class="info-story">The eternal flow of water, patiently washing away the fragile footprints of the past.</p>
+                </div>
+            </div>
+            
+            <div class="gallery-item">
+                <div class="img-container"><img src="Photo9.jpeg"></div>
+                <div class="item-text-wrap">
+                    <div class="info-header"><span>Still Time</span><span>ENTRY 09</span></div>
+                    <p class="info-story">Silent witnesses to the passage of eras, collecting dust, porcelain, and forgotten memories.</p>
+                </div>
+            </div>
+            
+            <div class="gallery-item">
+                <div class="img-container"><img src="Photo10.jpeg"></div>
+                <div class="item-text-wrap">
+                    <div class="info-header"><span>The Reaper</span><span>FINALE</span></div>
+                    <p class="info-story">The inevitable and quiet embrace that patiently awaits at the end of every grand journey.</p>
+                </div>
+            </div>
         </div>
 
         <footer>
@@ -219,7 +312,7 @@
         loaderPct.innerText = Math.floor(pct).toString().padStart(2, '0') + "%";
     }, 40);
 
-    // B. 巔峰平滑捲動與視窗偵測
+    // B. 巔峰平滑捲動
     let current = 0;
     let target = 0;
     let ease = 0.075;
@@ -248,8 +341,10 @@
     }
     
     function updateHeight() {
-        if (smoothContent) {
+        if (smoothContent && window.innerWidth > 800) {
             document.body.style.height = `${smoothContent.getBoundingClientRect().height}px`;
+        } else {
+            document.body.style.height = 'auto'; // 手機版釋放高度
         }
     }
     const resizeObserver = new ResizeObserver(() => updateHeight());
@@ -293,7 +388,23 @@
         }
     });
 
-    // F. 無縫飛出動畫
+    // F. 無縫飛出動畫與 ★ 手機下滑關閉觸控邏輯 ★
+    function closeLightbox() {
+        if (!activeImg) return;
+        const rect = activeImg.getBoundingClientRect();
+        lightbox.classList.remove('active');
+        movingPhoto.style.top = rect.top + 'px';
+        movingPhoto.style.left = rect.left + 'px';
+        movingPhoto.style.width = rect.width + 'px';
+        movingPhoto.style.height = rect.height + 'px';
+        setTimeout(() => {
+            if(activeImg) activeImg.classList.remove('hidden-origin');
+            lightbox.style.display = 'none';
+            document.body.classList.remove('no-scroll');
+            activeImg = null;
+        }, 1000);
+    }
+
     document.querySelectorAll('.gallery-item img').forEach(img => {
         img.addEventListener('click', () => {
             activeImg = img;
@@ -316,18 +427,20 @@
         });
     });
 
-    lightbox.addEventListener('click', () => {
-        const rect = activeImg.getBoundingClientRect();
-        lightbox.classList.remove('active');
-        movingPhoto.style.top = rect.top + 'px';
-        movingPhoto.style.left = rect.left + 'px';
-        movingPhoto.style.width = rect.width + 'px';
-        movingPhoto.style.height = rect.height + 'px';
-        setTimeout(() => {
-            activeImg.classList.remove('hidden-origin');
-            lightbox.style.display = 'none';
-            document.body.classList.remove('no-scroll');
-        }, 1000);
+    // 點擊關閉
+    lightbox.addEventListener('click', closeLightbox);
+
+    // 手機版觸控：下滑關閉 (Swipe Down to Close)
+    let touchStartY = 0;
+    lightbox.addEventListener('touchstart', (e) => {
+        touchStartY = e.changedTouches[0].screenY;
+    });
+    lightbox.addEventListener('touchend', (e) => {
+        const touchEndY = e.changedTouches[0].screenY;
+        // 如果手指向下滑動超過 60px，觸發關閉動畫
+        if (touchEndY - touchStartY > 60) {
+            closeLightbox();
+        }
     });
 
     document.querySelectorAll('.gallery-item, .audio-player, footer, #magnetic-title').forEach(el => {
