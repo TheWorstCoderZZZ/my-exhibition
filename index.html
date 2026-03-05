@@ -5,24 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LIFE — @ch._wong — The Pinnacle</title>
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500&family=Jost:wght@100;200;300;400&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Jost:wght@100;200;300;400&display=swap');
 
     html { scroll-behavior: auto; }
     ::-webkit-scrollbar { display: none; }
 
     body {
         margin: 0; padding: 0;
-        background-color: #000; color: #fff;
+        background-color: #030303; 
+        color: #fff;
         font-family: 'Jost', sans-serif;
         overflow-x: hidden;
         cursor: none;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
     }
 
     /* 電影膠片質感 */
     body::after {
         content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
         background-image: url("https://upload.wikimedia.org/wikipedia/commons/7/76/1k_Noise_Texture.png");
-        opacity: 0.05; pointer-events: none; z-index: 999998;
+        opacity: 0.035; pointer-events: none; z-index: 999998;
     }
 
     /* 1. 儀式感進場與 Enter 按鈕 */
@@ -30,40 +34,48 @@
         position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
         background: #000; z-index: 200000;
         display: flex; flex-direction: column; align-items: center; justify-content: center;
-        transition: opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+        transition: opacity 1.5s cubic-bezier(0.16, 1, 0.3, 1), visibility 1.5s;
     }
     .loader-content { text-align: center; display: flex; flex-direction: column; align-items: center; }
-    .loader-pct { font-family: 'Jost', sans-serif; font-weight: 100; font-size: 11px; letter-spacing: 12px; color: #fff; margin-bottom: 25px; opacity: 0.6; transition: opacity 0.5s ease; }
-    .loader-title { font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 15px; color: #fff; text-transform: uppercase; overflow: hidden; white-space: nowrap; animation: glow 3s ease-in-out infinite; margin-bottom: 30px; }
-    @keyframes glow { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+    .loader-pct { font-family: 'Jost', sans-serif; font-weight: 200; font-size: 12px; letter-spacing: 14px; color: #fff; margin-bottom: 30px; opacity: 0.7; transition: opacity 0.5s ease; }
+    .loader-title { font-family: 'Cinzel', serif; font-size: 15px; letter-spacing: 18px; color: #fff; text-transform: uppercase; overflow: hidden; white-space: nowrap; animation: glow 3.5s ease-in-out infinite; margin-bottom: 40px; }
+    @keyframes glow { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; text-shadow: 0 0 20px rgba(255,255,255,0.2); } }
     
-    /* 全新：Enter 進入按鈕 */
     #enter-btn {
-        font-family: 'Jost', sans-serif; font-weight: 200; font-size: 10px; letter-spacing: 6px;
-        color: #fff; text-transform: uppercase; padding: 12px 30px;
-        border: 1px solid rgba(255,255,255,0.2); border-radius: 2px;
-        cursor: none; opacity: 0; display: none; transition: all 0.6s ease;
+        position: relative; overflow: hidden;
+        font-family: 'Jost', sans-serif; font-weight: 300; font-size: 11px; letter-spacing: 8px;
+        color: #fff; text-transform: uppercase; padding: 15px 40px;
+        border: 1px solid rgba(255,255,255,0.15); border-radius: 1px;
+        cursor: none; opacity: 0; display: none; transition: all 0.8s cubic-bezier(0.2, 1, 0.2, 1);
         background: transparent;
     }
-    #enter-btn:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.6); }
+    #enter-btn::before {
+        content: ""; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+        background: rgba(255,255,255,0.1); transition: transform 0.6s cubic-bezier(0.2, 1, 0.2, 1);
+        z-index: -1;
+    }
+    #enter-btn:hover { border-color: rgba(255,255,255,0.8); letter-spacing: 10px; color: #fff; box-shadow: 0 0 30px rgba(255,255,255,0.1); }
+    #enter-btn:hover::before { transform: translateX(100%); }
 
     /* 2. 游標與環境光 */
     .custom-cursor {
-        position: fixed; top: 0; left: 0; width: 6px; height: 6px;
+        position: fixed; top: 0; left: 0; width: 5px; height: 5px;
         background-color: #fff; border-radius: 50%; pointer-events: none; z-index: 1000000;
         transform: translate(-50%, -50%); mix-blend-mode: difference;
-        transition: width 0.4s cubic-bezier(0.2, 1, 0.2, 1), height 0.4s cubic-bezier(0.2, 1, 0.2, 1);
+        transition: width 0.4s cubic-bezier(0.2, 1, 0.2, 1), height 0.4s cubic-bezier(0.2, 1, 0.2, 1), background-color 0.4s ease;
     }
-    .custom-cursor.hovered { width: 65px; height: 65px; background-color: rgba(255,255,255,0.1); border: 0.5px solid rgba(255,255,255,0.4); }
+    /* 優化 Hover 狀態，移除背景色防止灰圈，僅保留邊框與模糊 */
+    .custom-cursor.hovered { width: 75px; height: 75px; background-color: transparent; border: 1px solid rgba(255,255,255,0.5); backdrop-filter: blur(3px); }
     
+    /* 🌟 修復 2：修改 transparent 為透明白，徹底解決灰圈/黑邊 Bug */
     #ambient-glow {
-        position: fixed; top: 0; left: 0; width: 600px; height: 600px;
-        background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+        position: fixed; top: 0; left: 0; width: 700px; height: 700px;
+        background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 65%);
         border-radius: 50%; pointer-events: none; z-index: 99997;
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%); mix-blend-mode: screen; 
     }
 
-    #progress-bar { position: fixed; top: 0; left: 0; width: 0%; height: 2px; background: #fff; z-index: 100000; }
+    #progress-bar { position: fixed; top: 0; left: 0; width: 0%; height: 1.5px; background: rgba(255,255,255,0.8); z-index: 100000; box-shadow: 0 0 10px rgba(255,255,255,0.5); }
 
     /* 平滑捲動架構 */
     #smooth-wrapper { width: 100%; height: 100%; overflow: hidden; position: fixed; top: 0; left: 0; }
@@ -72,74 +84,99 @@
     body.no-scroll { overflow: hidden; }
 
     /* 3. 音譜播放器 */
-    .audio-player { position: fixed; top: 40px; right: 40px; z-index: 100001; display: flex; align-items: center; cursor: none; }
-    .visualizer { display: flex; align-items: flex-end; gap: 4px; height: 12px; margin-right: 15px; }
-    .vis-bar { width: 1px; background: #fff; height: 2px; }
-    .playing .vis-bar { animation: visualize 0.8s infinite ease-in-out; }
-    @keyframes visualize { 0%, 100% { height: 2px; } 50% { height: 12px; } }
-    .audio-label { font-size: 8px; letter-spacing: 4px; color: #888; text-transform: uppercase; }
+    .audio-player { position: fixed; top: 40px; right: 40px; z-index: 100001; display: flex; align-items: center; cursor: none; transition: opacity 0.5s ease; }
+    .audio-player:hover { opacity: 0.7; }
+    .visualizer { display: flex; align-items: flex-end; gap: 4px; height: 14px; margin-right: 15px; }
+    .vis-bar { width: 1.5px; background: #fff; height: 2px; transition: height 0.2s ease; }
+    .playing .vis-bar { animation: visualize 0.8s infinite ease-in-out alternate; }
+    .playing .vis-bar:nth-child(2) { animation-delay: 0.2s; }
+    .playing .vis-bar:nth-child(3) { animation-delay: 0.4s; }
+    .playing .vis-bar:nth-child(4) { animation-delay: 0.1s; }
+    @keyframes visualize { 0% { height: 2px; } 100% { height: 14px; } }
+    .audio-label { font-size: 9px; letter-spacing: 5px; color: #aaa; text-transform: uppercase; font-weight: 300; }
 
-    /* 4. Header */
-    header { padding: 45vh 8vw 20vh 8vw; }
+    /* 4. Header 標題 */
+    header { padding: 40vh 8vw 20vh 8vw; display: flex; flex-direction: column; justify-content: center; }
     header h1 { 
-        font-family: 'Cinzel', serif; font-size: 11vw; letter-spacing: 4vw; 
-        text-transform: uppercase; margin: 0; line-height: 0.8;
+        font-family: 'Cinzel', serif; font-size: clamp(50px, 12vw, 200px); letter-spacing: clamp(10px, 4vw, 60px); 
+        text-transform: uppercase; margin: 0; line-height: 0.85;
         transition: transform 0.4s cubic-bezier(0.2, 1, 0.2, 1); display: inline-block;
+        background: linear-gradient(180deg, #fff 0%, #aaa 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        width: fit-content;
     }
-    header p { font-weight: 200; letter-spacing: 1.5vw; color: #888; text-transform: uppercase; margin-top: 60px; }
+    header p { font-weight: 200; font-size: clamp(10px, 1.2vw, 16px); letter-spacing: 1.8vw; color: #777; text-transform: uppercase; margin-top: 50px; }
 
     /* 5. 開窗式畫廊 */
-    .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15vw; padding: 0 8vw 200px 8vw; max-width: 1800px; margin: 0 auto; }
+    .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12vw; padding: 0 8vw 200px 8vw; max-width: 1800px; margin: 0 auto; }
     .gallery-item {
         position: relative; opacity: 0; clip-path: inset(100% 0 0 0); -webkit-clip-path: inset(100% 0 0 0);
         transition: opacity 1.8s ease, clip-path 1.8s cubic-bezier(0.2, 1, 0.2, 1), -webkit-clip-path 1.8s cubic-bezier(0.2, 1, 0.2, 1), transform 1.8s cubic-bezier(0.2, 1, 0.2, 1);
-        transform: translateY(50px);
+        transform: translateY(60px);
     }
-    .gallery-item.visible { opacity: 1; clip-path: inset(0% 0 0 0); -webkit-clip-path: inset(0% 0 0 0); transform: translateY(0); }
-    .gallery-item:nth-child(even) { margin-top: 30vh; }
+    .gallery-item:nth-child(even) { margin-top: 25vh; }
 
-    .img-container { width: 100%; overflow: hidden; background: #050505; }
-    .gallery-item img { width: 100%; display: block; filter: grayscale(100%) brightness(0.6); transition: transform 2.5s cubic-bezier(0.2, 1, 0.2, 1), filter 1.5s ease; }
+    .img-container { 
+        width: 100%; overflow: hidden; background: #050505;
+        border: 1px solid rgba(255,255,255,0.04); padding: 10px; box-sizing: border-box;
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.8); position: relative;
+    }
+    .gallery-item img { width: 100%; display: block; filter: grayscale(90%) contrast(1.1) brightness(0.6); transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1), filter 1.5s ease; }
+    .img-hover-target { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: none; }
+    
     .gallery-item img.hidden-origin { opacity: 0 !important; }
-    .gallery-item:hover img:not(.hidden-origin) { transform: scale(1.08); filter: grayscale(0%) brightness(1.1); }
+    .gallery-item:hover img:not(.hidden-origin) { transform: scale(1.05); filter: grayscale(0%) contrast(1.05) brightness(1.05); }
 
-    .item-text-wrap { margin-top: 40px; display: flex; flex-direction: column; opacity: 0; transform: translateY(15px); transition: all 1s cubic-bezier(0.2, 1, 0.2, 1); }
+    .item-text-wrap { margin-top: 45px; display: flex; flex-direction: column; opacity: 0; transform: translateY(20px); transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1); }
     .gallery-item:hover .item-text-wrap { opacity: 1; transform: translateY(0); }
-    .info-header { display: flex; justify-content: space-between; font-size: 9px; letter-spacing: 5px; color: #555; text-transform: uppercase; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; transition: border-color 1s, color 1s; }
-    .gallery-item:hover .info-header { color: #fff; border-color: rgba(255,255,255,0.3); }
-    .info-story { font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 2px; color: #444; line-height: 1.8; margin: 0; transition: color 1s; }
-    .gallery-item:hover .info-story { color: #ccc; }
+    
+    .info-header { display: flex; justify-content: space-between; font-size: 10px; letter-spacing: 6px; color: #666; text-transform: uppercase; margin-bottom: 25px; padding-bottom: 15px; position: relative; }
+    .info-header::after { content: ""; position: absolute; bottom: 0; left: 0; width: 100%; height: 1px; background: rgba(255,255,255,0.08); transition: background 1s ease; }
+    .gallery-item:hover .info-header { color: #fff; }
+    .gallery-item:hover .info-header::after { background: rgba(255,255,255,0.4); }
+    
+    .info-story { font-family: 'Cinzel', serif; font-size: 14px; letter-spacing: 2px; color: #555; line-height: 1.9; margin: 0; transition: color 1s ease; }
+    .gallery-item:hover .info-story { color: #ddd; }
 
     /* 6. Footer */
-    footer { padding: 100px 8vw 60px 8vw; text-align: center; border-top: 1px solid rgba(255,255,255,0.03); }
-    footer p { font-weight: 100; letter-spacing: 2vw; font-size: 10px; color: #555; text-transform: uppercase; transition: all 1s ease; }
-    footer p:hover { color: #fff; letter-spacing: 2.2vw; }
+    footer { padding: 120px 8vw 80px 8vw; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); }
+    footer p { font-weight: 200; letter-spacing: 2vw; font-size: 11px; color: #444; text-transform: uppercase; transition: all 1s ease; display: inline-block; position: relative; z-index: 10; }
+    footer p:hover { color: #fff; letter-spacing: 2.5vw; }
 
     /* 7. Lightbox */
-    #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1000000; transition: background-color 1.2s ease; }
-    #lightbox.active { background-color: rgba(0,0,0,0.995); }
-    #moving-photo { position: absolute; object-fit: contain; transition: all 1s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1000001; pointer-events: none; }
+    #lightbox { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1000000; opacity: 0; background-color: rgba(0,0,0,0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+    
+    /* 🌟 修復 1：加入絕對座標起點，確保 GSAP 位移軌跡精準 */
+    #moving-photo { 
+        position: absolute; 
+        top: 0; left: 0; transform-origin: top left;
+        object-fit: cover; z-index: 1000001; pointer-events: none; 
+        box-shadow: 0 30px 60px rgba(0,0,0,0.8); 
+    }
 
     /* 手機版兼容 */
-    @media (max-width: 800px) {
-        body { cursor: auto; overflow-x: hidden; }
-        .custom-cursor, #ambient-glow { display: none !important; }
+    @media (max-width: 850px) {
+        body { cursor: auto; overflow-x: hidden; overflow-y: auto; }
+        .custom-cursor, #ambient-glow { display: none !important; } 
         #smooth-wrapper { position: relative; width: 100%; height: auto !important; overflow: visible; }
-        #smooth-content { transform: none !important; }
-        header { padding: 25vh 6vw 15vh 6vw; }
-        header h1 { font-size: 14vw; letter-spacing: 2vw; }
-        header p { margin-top: 30px; font-size: 10px; letter-spacing: 3px; }
-        .gallery { grid-template-columns: 1fr; gap: 70px; padding: 0 6vw 100px 6vw; }
+        #smooth-content { transform: none !important; } 
+        header { padding: 25vh 6vw 15vh 6vw; text-align: center; }
+        header h1 { width: auto; }
+        header p { margin-top: 25px; font-size: 9px; letter-spacing: 6px; }
+        .gallery { grid-template-columns: 1fr; gap: 90px; padding: 0 6vw 120px 6vw; }
         .gallery-item { transform: translateY(30px); }
         .gallery-item:nth-child(even) { margin-top: 0; }
-        .gallery-item img { filter: grayscale(30%) brightness(0.8); }
-        .item-text-wrap { opacity: 1; transform: translateY(0); margin-top: 25px; }
-        .info-header { color: #aaa; border-color: rgba(255,255,255,0.15); padding-bottom: 10px; margin-bottom: 12px; }
-        .info-story { color: #888; font-size: 12px; }
-        footer { padding: 60px 6vw 40px 6vw; margin-top: 60px; }
-        footer p { font-size: 9px; letter-spacing: 1.5vw; }
-        .audio-player { top: 20px; right: 20px; }
-        #enter-btn { cursor: auto; } /* 手機恢復原生觸控 */
+        .img-container { padding: 5px; border-color: rgba(255,255,255,0.08); }
+        .gallery-item img { filter: grayscale(20%) brightness(0.8); } 
+        .item-text-wrap { opacity: 1; transform: translateY(0); margin-top: 30px; }
+        .info-header { color: #aaa; padding-bottom: 12px; margin-bottom: 15px; font-size: 9px; letter-spacing: 4px; }
+        .info-header::after { background: rgba(255,255,255,0.2); }
+        .info-story { color: #aaa; font-size: 12px; line-height: 1.7; }
+        footer { padding: 60px 6vw 40px 6vw; margin-top: 40px; }
+        footer p { font-size: 8px; letter-spacing: 4px; }
+        .audio-player { top: 25px; right: 25px; }
+        .audio-label { display: none; } 
+        #enter-btn { cursor: pointer; padding: 12px 25px; font-size: 10px; } 
     }
 </style>
 </head>
@@ -173,49 +210,49 @@
 
         <div class="gallery">
             <div class="gallery-item">
-                <div class="img-container"><img src="Photo1.jpeg"></div>
+                <div class="img-container"><img src="Photo1.jpeg"><div class="img-hover-target"></div></div>
                 <div class="item-text-wrap"><div class="info-header"><span>Urban Flow</span><span>ENTRY 01</span></div><p class="info-story">The rhythm of the city pulses through steel veins, capturing fleeting moments of metropolitan existence.</p></div>
             </div>
             <div class="gallery-item">
-                <div class="img-container"><img src="Photo2.jpeg"></div>
+                <div class="img-container"><img src="Photo2.jpeg"><div class="img-hover-target"></div></div>
                 <div class="item-text-wrap"><div class="info-header"><span>Peak Silence</span><span>ENTRY 02</span></div><p class="info-story">A silent monument standing against the shifting tides of time, veiled in dramatic clouds.</p></div>
             </div>
             <div class="gallery-item">
-                <div class="img-container"><img src="Photo3.jpeg"></div>
+                <div class="img-container"><img src="Photo3.jpeg"><div class="img-hover-target"></div></div>
                 <div class="item-text-wrap"><div class="info-header"><span>Human Soul</span><span>ENTRY 03</span></div><p class="info-story">Fleeting shadows and intertwined destinies painted on the vibrant concrete canvas.</p></div>
             </div>
             <div class="gallery-item">
-                <div class="img-container"><img src="Photo4.jpeg"></div>
+                <div class="img-container"><img src="Photo4.jpeg"><div class="img-hover-target"></div></div>
                 <div class="item-text-wrap"><div class="info-header"><span>Rural Spirit</span><span>ENTRY 04</span></div><p class="info-story">Whispers of the wind captured in the absolute stillness of the forgotten countryside.</p></div>
             </div>
             <div class="gallery-item">
-                <div class="img-container"><img src="Photo5.jpeg"></div>
+                <div class="img-container"><img src="Photo5.jpeg"><div class="img-hover-target"></div></div>
                 <div class="item-text-wrap"><div class="info-header"><span>Macro Life</span><span>ENTRY 05</span></div><p class="info-story">The intricate dance of life, revealing entire universes hidden within the unseen.</p></div>
             </div>
             <div class="gallery-item">
-                <div class="img-container"><img src="Photo6.jpeg"></div>
+                <div class="img-container"><img src="Photo6.jpeg"><div class="img-hover-target"></div></div>
                 <div class="item-text-wrap"><div class="info-header"><span>Crimson Bloom</span><span>ENTRY 06</span></div><p class="info-story">A vivid declaration of existence, blooming fiercely against the encroaching darkness.</p></div>
             </div>
             <div class="gallery-item">
-                <div class="img-container"><img src="Photo7.jpeg"></div>
+                <div class="img-container"><img src="Photo7.jpeg"><div class="img-hover-target"></div></div>
                 <div class="item-text-wrap"><div class="info-header"><span>Midnight Glow</span><span>ENTRY 07</span></div><p class="info-story">Illuminated memories cast long, emerald shadows in the quietest hours of the night.</p></div>
             </div>
             <div class="gallery-item">
-                <div class="img-container"><img src="Photo8.jpeg"></div>
+                <div class="img-container"><img src="Photo8.jpeg"><div class="img-hover-target"></div></div>
                 <div class="item-text-wrap"><div class="info-header"><span>Silent Stream</span><span>ENTRY 08</span></div><p class="info-story">The eternal flow of water, patiently washing away the fragile footprints of the past.</p></div>
             </div>
             <div class="gallery-item">
-                <div class="img-container"><img src="Photo9.jpeg"></div>
+                <div class="img-container"><img src="Photo9.jpeg"><div class="img-hover-target"></div></div>
                 <div class="item-text-wrap"><div class="info-header"><span>Still Time</span><span>ENTRY 09</span></div><p class="info-story">Silent witnesses to the passage of eras, collecting dust, porcelain, and forgotten memories.</p></div>
             </div>
             <div class="gallery-item">
-                <div class="img-container"><img src="Photo10.jpeg"></div>
+                <div class="img-container"><img src="Photo10.jpeg"><div class="img-hover-target"></div></div>
                 <div class="item-text-wrap"><div class="info-header"><span>The Reaper</span><span>FINALE</span></div><p class="info-story">The inevitable and quiet embrace that patiently awaits at the end of every grand journey.</p></div>
             </div>
         </div>
 
         <footer>
-            <p>© 2026 — @ch._wong — The Pinnacle Collection</p>
+            <p>© 2026 — @ch._wong</p>
         </footer>
     </div>
 </div>
@@ -224,7 +261,13 @@
     <img id="moving-photo" src="">
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    const isMobile = window.innerWidth <= 850; 
+    
     const cursor = document.getElementById('cursor');
     const glow = document.getElementById('ambient-glow');
     const progressBar = document.getElementById('progress-bar');
@@ -240,98 +283,148 @@
     const magneticTitle = document.getElementById('magnetic-title');
     const galleryItems = document.querySelectorAll('.gallery-item');
     let activeImg = null;
-    let isMobile = window.innerWidth <= 800;
 
-    // A. 升級版儀式感進場：載入後顯示 Enter 互動按鈕
+    // A. 儀式感進場
     let pct = 0;
     const interval = setInterval(() => {
-        pct += (Math.random() * 2.5);
+        pct += (Math.random() * 2);
         if (pct >= 100) {
             pct = 100;
             clearInterval(interval);
-            // 百分比褪去，顯示 Enter 按鈕
-            loaderPct.style.opacity = '0';
-            setTimeout(() => {
-                loaderPct.style.display = 'none';
-                enterBtn.style.display = 'inline-block';
-                // 微小延遲確保 display 轉換完畢才執行 opacity 動畫
-                setTimeout(() => { enterBtn.style.opacity = '1'; }, 50);
-            }, 500);
+            enterBtn.style.display = 'inline-block';
+            gsap.to(enterBtn, { opacity: 1, y: -10, duration: 1, ease: "power2.out" });
         }
         loaderPct.innerText = Math.floor(pct).toString().padStart(2, '0') + "%";
     }, 40);
 
-    // Enter 按鈕點擊事件：解鎖播放音樂並進入網頁
+    // B. 點擊 Enter 進入展覽
     enterBtn.addEventListener('click', () => {
-        // 嘗試播放音樂
-        audio.play().catch(() => console.log('Audio file missing or blocked'));
+        cursor.classList.remove('hovered'); // 強制清除游標放大狀態
+        loader.style.pointerEvents = 'none'; // 防止遮擋
+        
+        audio.play().catch(() => {});
         audioToggle.classList.add('playing');
         audioStatus.innerText = "Sound On";
         
-        // 隱藏 Loader
-        loader.style.opacity = '0';
-        setTimeout(() => loader.style.display = 'none', 1500);
+        gsap.to(loader, { opacity: 0, duration: 1.5, ease: "power2.inOut", onComplete: () => {
+            loader.style.visibility = 'hidden';
+            loader.style.display = 'none';
+        }});
     });
 
-    // B. 平滑捲動
-    let current = 0; let target = 0; let ease = 0.075;
-    function lerp(start, end, t) { return start * (1 - t) + end * t; }
-
+    // C. 平滑捲動架構
+    let current = 0, target = 0;
     function smoothScroll() {
+        target = window.scrollY;
+        
         if (!isMobile) {
-            target = window.scrollY;
-            current = lerp(current, target, ease);
+            current = gsap.utils.interpolate(current, target, 0.075);
             smoothContent.style.transform = `translate3d(0, ${-current}px, 0)`;
-            const height = Math.max(1, document.body.scrollHeight - window.innerHeight);
-            progressBar.style.width = (target / height) * 100 + "%";
-        } else {
-            smoothContent.style.transform = 'none';
-            const height = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-            progressBar.style.width = (window.scrollY / height) * 100 + "%";
         }
+        
+        const height = Math.max(1, document.body.scrollHeight - window.innerHeight);
+        progressBar.style.width = (target / height) * 100 + "%";
 
-        const wh = window.innerHeight;
-        galleryItems.forEach(item => {
-            const rect = item.getBoundingClientRect();
-            if (rect.top < wh * 0.9 && rect.bottom > 0) item.classList.add('visible');
-            else item.classList.remove('visible');
-        });
         requestAnimationFrame(smoothScroll);
     }
     
-    function updateLayout() {
-        isMobile = window.innerWidth <= 800;
-        if (!isMobile && smoothContent) document.body.style.height = `${smoothContent.getBoundingClientRect().height}px`;
-        else document.body.style.height = 'auto';
+    function updateHeight() {
+        if (!isMobile && smoothContent) {
+            document.body.style.height = `${smoothContent.getBoundingClientRect().height}px`;
+        } else {
+            document.body.style.height = 'auto';
+        }
+        ScrollTrigger.refresh();
     }
-    const resizeObserver = new ResizeObserver(() => updateLayout());
-    resizeObserver.observe(smoothContent);
-    window.addEventListener('resize', updateLayout);
-    window.addEventListener('load', updateLayout);
+    window.addEventListener('resize', updateHeight);
+    window.addEventListener('load', updateHeight);
     smoothScroll();
 
-    // C. 游標與環境光
-    document.addEventListener('mousemove', (e) => {
-        if (isMobile) return;
-        cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
-        glow.style.left = e.clientX + 'px';
-        glow.style.top = e.clientY + 'px';
+    // ★ 修復 3：偵測滾輪事件，一捲動立刻強行縮回游標，解決卡住問題 ★
+    window.addEventListener('wheel', () => {
+        if (!isMobile) cursor.classList.remove('hovered');
+    }, { passive: true });
 
-        const rect = magneticTitle.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const distance = Math.hypot(e.clientX - centerX, e.clientY - centerY);
-        if (distance < 300) {
-            const moveX = (e.clientX - centerX) * 0.3;
-            const moveY = (e.clientY - centerY) * 0.3;
-            magneticTitle.style.transform = `translate(${moveX}px, ${moveY}px)`;
-        } else {
-            magneticTitle.style.transform = `translate(0, 0)`;
-        }
-    });
+    // D. 游標與加強環境光 (只限桌面端)
+    if (!isMobile) {
+        gsap.set([cursor, glow], { xPercent: -50, yPercent: -50 });
+        let xTo = gsap.quickTo(cursor, "x", { duration: 0.15, ease: "power3" }),
+            yTo = gsap.quickTo(cursor, "y", { duration: 0.15, ease: "power3" }),
+            gxTo = gsap.quickTo(glow, "x", { duration: 0.5, ease: "power2" }),
+            gyTo = gsap.quickTo(glow, "y", { duration: 0.5, ease: "power2" });
 
-    // D. 播放器控制
+        document.addEventListener('mousemove', (e) => {
+            xTo(e.clientX); yTo(e.clientY);
+            gxTo(e.clientX); gyTo(e.clientY);
+
+            const rect = magneticTitle.getBoundingClientRect();
+            const currentX = gsap.getProperty(magneticTitle, "x") || 0;
+            const currentY = gsap.getProperty(magneticTitle, "y") || 0;
+            
+            const centerX = (rect.left - currentX) + rect.width / 2;
+            const centerY = (rect.top - currentY) + rect.height / 2;
+            
+            const distX = Math.abs(e.clientX - centerX);
+            const distY = Math.abs(e.clientY - centerY);
+            
+            const hoverPaddingX = 100;
+            const hoverPaddingY = 80;
+            
+            if (distX < (rect.width / 2) + hoverPaddingX && distY < (rect.height / 2) + hoverPaddingY) {
+                gsap.to(magneticTitle, {
+                    x: (e.clientX - centerX) * 0.25, 
+                    y: (e.clientY - centerY) * 0.25,
+                    duration: 0.4, ease: "power2.out"
+                });
+            } else {
+                gsap.to(magneticTitle, { x: 0, y: 0, duration: 0.7, ease: "elastic.out(1, 0.5)" });
+            }
+        });
+        
+        document.querySelectorAll('.img-hover-target, .audio-player, footer p, #magnetic-title, #enter-btn').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+        });
+    }
+
+    // E. 捲動觸發：視覺差進場 + 環境光變色
+    // 使用 rgba 與尾碼 0，完美解決背景變色的灰圈 Bug
+    const colorGlows = [
+        "rgba(255,255,255,0.12)", "rgba(74,90,74,0.15)", "rgba(255,255,255,0.12)", 
+        "rgba(90,80,74,0.15)", "rgba(90,74,90,0.15)", "rgba(106,26,26,0.18)", 
+        "rgba(26,90,74,0.18)", "rgba(26,74,90,0.15)", "rgba(90,80,26,0.15)", "rgba(255,255,255,0.12)"
+    ];
+    
+    setTimeout(() => {
+        galleryItems.forEach((item, i) => {
+            const img = item.querySelector('img');
+            
+            const parallaxY = isMobile ? "5%" : "12%";
+            gsap.fromTo(img, 
+                { y: `-${parallaxY}`, scale: 1.1 }, 
+                { y: parallaxY, ease: "none", scrollTrigger: { trigger: item, scrub: true } }
+            );
+
+            gsap.to(item, {
+                opacity: 1, clipPath: "inset(0% 0 0 0)", y: 0, duration: 1.4, ease: "power3.out",
+                scrollTrigger: { trigger: item, start: "top 85%" }
+            });
+
+            if (!isMobile) {
+                const solidColor = colorGlows[i];
+                // 將 alpha 值轉換為 0 以獲得乾淨的透明邊緣
+                const transColor = solidColor.replace(/[\d.]+\)$/, '0)'); 
+                
+                ScrollTrigger.create({
+                    trigger: item, start: "top center", end: "bottom center",
+                    onEnter: () => gsap.to(glow, { background: `radial-gradient(circle, ${solidColor} 0%, ${transColor} 65%)`, duration: 1.5 }),
+                    onEnterBack: () => gsap.to(glow, { background: `radial-gradient(circle, ${solidColor} 0%, ${transColor} 65%)`, duration: 1.5 })
+                });
+            }
+        });
+    }, 500);
+
+    // F. 播放器
     audioToggle.addEventListener('click', () => {
         if (audio.paused) {
             audio.play().catch(() => {});
@@ -344,57 +437,97 @@
         }
     });
 
-    // E. 無縫飛出動畫與下滑關閉
+    // G. 高端無縫 Lightbox：動態計算長寬比，消除黑邊，電影級進出
     function closeLightbox() {
         if (!activeImg) return;
         const rect = activeImg.getBoundingClientRect();
-        lightbox.classList.remove('active');
-        movingPhoto.style.top = rect.top + 'px';
-        movingPhoto.style.left = rect.left + 'px';
-        movingPhoto.style.width = rect.width + 'px';
-        movingPhoto.style.height = rect.height + 'px';
-        setTimeout(() => {
-            if(activeImg) activeImg.classList.remove('hidden-origin');
-            lightbox.style.display = 'none';
-            document.body.classList.remove('no-scroll');
-            activeImg = null;
-        }, 1000);
+        
+        gsap.to(lightbox, { opacity: 0, duration: 0.6, ease: "power3.inOut" });
+
+        // 優化：關閉時使用 Expo 曲線，感覺更扎實
+        gsap.to(movingPhoto, {
+            x: rect.left,
+            y: rect.top,
+            width: rect.width,
+            height: rect.height,
+            duration: 0.8,
+            ease: "expo.inOut",
+            onComplete: () => {
+                if(activeImg) activeImg.classList.remove('hidden-origin');
+                lightbox.style.display = 'none';
+                document.body.classList.remove('no-scroll');
+                activeImg = null;
+            }
+        });
     }
 
-    document.querySelectorAll('.gallery-item img').forEach(img => {
-        img.addEventListener('click', () => {
+    document.querySelectorAll('.img-hover-target').forEach(target => {
+        target.addEventListener('click', (e) => {
+            const img = e.target.previousElementSibling;
+            cursor.classList.remove('hovered');
             activeImg = img;
+            
             const rect = img.getBoundingClientRect();
-            movingPhoto.src = img.src;
-            movingPhoto.style.top = rect.top + 'px';
-            movingPhoto.style.left = rect.left + 'px';
-            movingPhoto.style.width = rect.width + 'px';
-            movingPhoto.style.height = rect.height + 'px';
+            
+            gsap.set(movingPhoto, {
+                attr: { src: img.src },
+                x: rect.left,
+                y: rect.top,
+                width: rect.width,
+                height: rect.height
+            });
+            
             lightbox.style.display = 'block';
             img.classList.add('hidden-origin');
             document.body.classList.add('no-scroll');
-            setTimeout(() => {
-                lightbox.classList.add('active');
-                movingPhoto.style.top = isMobile ? '15vh' : '10vh';
-                movingPhoto.style.left = isMobile ? '0vw' : '10vw';
-                movingPhoto.style.width = isMobile ? '100vw' : '80vw';
-                movingPhoto.style.height = isMobile ? '70vh' : '80vh';
-            }, 50);
+            
+            gsap.to(lightbox, { opacity: 1, duration: 0.4, ease: "power2.out" });
+
+            // ★ 修復 1：動態計算相片完美尺寸 (Aspect Ratio Fit) ★
+            // 讀取相片的原始長寬比例
+            const imgRatio = img.naturalWidth / img.naturalHeight;
+            // 設定螢幕最大可容納範圍 (留出邊距)
+            const maxW = isMobile ? window.innerWidth * 0.95 : window.innerWidth * 0.85;
+            const maxH = isMobile ? window.innerHeight * 0.85 : window.innerHeight * 0.85;
+            const boundsRatio = maxW / maxH;
+
+            let targetW, targetH;
+            
+            // 如果相片比例較寬 (例如風景)
+            if (imgRatio > boundsRatio) {
+                targetW = maxW;
+                targetH = maxW / imgRatio;
+            } 
+            // 如果相片比例較高 (例如人像/死神)
+            else {
+                targetH = maxH;
+                targetW = maxH * imgRatio;
+            }
+
+            // 精準置中
+            const targetX = (window.innerWidth - targetW) / 2;
+            const targetY = (window.innerHeight - targetH) / 2;
+
+            // 優化：放大時使用 Expo 曲線，帶來瞬間放大的衝擊力
+            gsap.to(movingPhoto, {
+                x: targetX,
+                y: targetY,
+                width: targetW,
+                height: targetH,
+                duration: 0.9,
+                ease: "expo.inOut"
+            });
         });
     });
 
     lightbox.addEventListener('click', closeLightbox);
 
     let touchStartY = 0;
-    lightbox.addEventListener('touchstart', (e) => { touchStartY = e.changedTouches[0].screenY; });
+    lightbox.addEventListener('touchstart', (e) => touchStartY = e.changedTouches[0].screenY);
     lightbox.addEventListener('touchend', (e) => {
         if (e.changedTouches[0].screenY - touchStartY > 60) closeLightbox();
     });
 
-    document.querySelectorAll('.gallery-item, .audio-player, footer, #magnetic-title, #enter-btn').forEach(el => {
-        el.addEventListener('mouseenter', () => { if(!isMobile) cursor.classList.add('hovered'); });
-        el.addEventListener('mouseleave', () => { if(!isMobile) cursor.classList.remove('hovered'); });
-    });
 </script>
 
 </body>
