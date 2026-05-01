@@ -163,6 +163,11 @@
         header { padding: 25vh 6vw 15vh 6vw; text-align: center; }
         header h1 { width: auto; }
         header p { margin-top: 25px; font-size: 9px; letter-spacing: 6px; }
+        
+        /* 解決 Loader 標題手機版出界問題 */
+        .loader-title { font-size: 11px; letter-spacing: 6px; }
+        .loader-pct { font-size: 10px; letter-spacing: 8px; }
+
         .gallery { grid-template-columns: 1fr; gap: 90px; padding: 0 6vw 120px 6vw; }
         .gallery-item { transform: translateY(30px); }
         .gallery-item:nth-child(even) { margin-top: 0; }
@@ -201,7 +206,7 @@
             <div class="visualizer"><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div><div class="vis-bar"></div></div>
             <div class="audio-label" id="audio-status">Sound Off</div>
         </div>
-        <audio id="bg-music" loop><source src="your-video.mp4" type="audio/mp4"></audio>
+        <audio id="bg-music" loop><source src="your-audio.mp3" type="audio/mpeg"></audio>
 
         <header>
             <h1 id="magnetic-title">Life</h1>
